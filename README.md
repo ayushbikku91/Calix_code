@@ -24,4 +24,64 @@ This will create a new directory called `my-operator/` containing the basic stru
 
 3. Add the necessary code to the operator.
 
-The following code shows how to add the necessary code to the operator to deploy a microservice application with MongoDB:
+k8s_operator.py codes shows how to add the necessary code to the operator to deploy a microservice application with MongoDB:
+
+4. Build and deploy the operator.
+
+To build and deploy the operator, run the following commands:
+
+
+make build
+kubectl apply -f deploy/operator.yaml
+
+
+5. Create a persistent volume claim for MongoDB.
+
+To create a persistent volume claim for MongoDB, run the following command:
+
+
+kubectl apply -f deploy/mongodb-pvc.yaml
+
+
+6. Deploy your microservice application.
+
+To deploy your microservice application, run the following command:
+
+
+kubectl apply -f deploy/my-app.yaml
+
+
+This will deploy your microservice application with MongoDB.
+
+7. Expand the persistent volume associated with the MongoDB pod.
+
+To expand the persistent volume associated with the MongoDB pod, run the following commands:
+
+
+# Get the name of the MongoDB pod.
+mongodb_pod_name=$(kubectl get pods -l app=my-app -o jsonpath='{.items[0].metadata.name}')
+
+# Get the name of the persistent volume claim associated with the MongoDB pod.
+mongodb_pvc_name=$(kubectl get pod "$mongodb_pod_name" -o jsonpath='{.spec.volumes[0].persistentVolumeClaim.claimName}')
+
+# Expand the persistent volume claim.
+kubectl patch persistentvolumeclaims "$mongodb_pvc_name" --type json -p '[{"op": "replace", "path": "/spec/resources/requests/storage", "value": "10Gi"}]'
+
+
+This will expand the persistent volume associated with the MongoDB pod to 10Gi.
+
+You can now use your microservice.
+
+#2 Question 
+
+To create a simple CRUD application only APIs using Python, we can follow these steps:
+
+1. Create a new Python project and install the necessary dependencies.
+
+pip install flask
+
+2. Create a Flask app.
+
+Create a new file called `app.py` and add the following code:
+
+
